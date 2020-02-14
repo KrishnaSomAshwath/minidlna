@@ -26,13 +26,13 @@ and configuring minidlna.
 Prerequisites
 ==================
 
-- libexif
-- libjpeg
-- libid3tag
-- libFLAC
-- libvorbis
-- libsqlite3
-- libavformat (the ffmpeg libraries)
+sudo apt install autoconf
+sudo apt install aclocal
+sudo apt install automake
+sudo apt install automake-1.15
+sudo apt install automake-1.14
+sudo apt install gettext
+sudo apt install gettext-dev
+sudo apt install autotools-dev
 
 
-Justin Maggard
