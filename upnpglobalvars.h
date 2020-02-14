@@ -75,6 +75,10 @@
 #endif
 #define THISORNUL(s) (s ? s : "")
 
+#ifndef PNPX
+#define PNPX 0
+#endif
+
 #define RESOURCE_PROTOCOL_INFO_VALUES \
 	"http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_TN," \
 	"http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_SM," \
@@ -193,6 +197,12 @@ extern uint32_t runtime_flags;
 #else
 #define TIVO_BONJOUR_MASK     0x0000
 #endif
+
+#ifdef THUMBNAIL_CREATION
+#define THUMB_MASK            0x00A0
+#define THUMB_FILMSTRIP       0x00C0
+#endif
+
 #define SCANNING_MASK         0x0100
 #define RESCAN_MASK           0x0200
 
@@ -215,6 +225,10 @@ extern char serialnumber[];
 
 #define PRESENTATIONURL_MAX_LEN 64
 extern char presentationurl[];
+
+#if PNPX
+extern char pnpx_hwid[];
+#endif
 
 /* lan addresses */
 extern int n_lan_addr;

@@ -239,6 +239,30 @@ getfriendlyname(char *buf, int len)
 		}
 	}
 	fclose(info);
+#if PNPX
+	memcpy(pnpx_hwid+4, "01F2", 4);
+	if (strcmp(modelnumber, "NVX") == 0)
+		memcpy(pnpx_hwid+17, "0101", 4);
+	else if (strcmp(modelnumber, "Pro") == 0 ||
+	         strcmp(modelnumber, "Pro 6") == 0 ||
+	         strncmp(modelnumber, "Ultra 6", 7) == 0)
+		memcpy(pnpx_hwid+17, "0102", 4);
+	else if (strcmp(modelnumber, "Pro 2") == 0 ||
+	         strncmp(modelnumber, "Ultra 2", 7) == 0)
+		memcpy(pnpx_hwid+17, "0103", 4);
+	else if (strcmp(modelnumber, "Pro 4") == 0 ||
+	         strncmp(modelnumber, "Ultra 4", 7) == 0)
+		memcpy(pnpx_hwid+17, "0104", 4);
+	else if (strcmp(modelnumber+1, "100") == 0)
+		memcpy(pnpx_hwid+17, "0105", 4);
+	else if (strcmp(modelnumber+1, "200") == 0)
+		memcpy(pnpx_hwid+17, "0106", 4);
+	/* 0107 = Stora */
+	else if (strcmp(modelnumber, "Duo v2") == 0)
+		memcpy(pnpx_hwid+17, "0108", 4);
+	else if (strcmp(modelnumber, "NV+ v2") == 0)
+		memcpy(pnpx_hwid+17, "0109", 4);
+#endif
 #else
 	char * logname;
 	logname = getenv("LOGNAME");
@@ -539,6 +563,11 @@ init(int argc, char **argv)
 	runtime_vars.root_container = NULL;
 	runtime_vars.ifaces[0] = NULL;
 
+#ifdef THUMBNAIL_CREATION
+	runtime_vars.thumb_width = 160;
+	runtime_vars.thumb_quality = 8;
+#endif
+
 	/* read options file first since
 	 * command line arguments have final say */
 	if (readoptionsfile(optionsfile) < 0)
@@ -744,14 +773,30 @@ init(int argc, char **argv)
 			if (strtobool(ary_options[i].value))
 				SETFLAG(MERGE_MEDIA_DIRS_MASK);
 			break;
-		case WIDE_LINKS:
-			if (strtobool(ary_options[i].value))
-				SETFLAG(WIDE_LINKS_MASK);
+#ifdef THUMBNAIL_CREATION
+		case ENABLE_THUMB:
+			if( (strcmp(ary_options[i].value, "yes") == 0) || atoi(ary_options[i].value) )
+				SETFLAG(THUMB_MASK);
+		break;
+		case THUMB_WIDTH:
+			runtime_vars.thumb_width = atoi(ary_options[i].value);
+			if (runtime_vars.thumb_width < 120)
+				runtime_vars.thumb_width = 120;
+			if (runtime_vars.thumb_width > 480)
+				runtime_vars.thumb_width = 480;
 			break;
-		case TIVO_DISCOVERY:
-			if (strcasecmp(ary_options[i].value, "beacon") == 0)
-				CLEARFLAG(TIVO_BONJOUR_MASK);
-			break;
+		case THUMB_QUALITY:
+			runtime_vars.thumb_quality = atoi(ary_options[i].value);
+			if (runtime_vars.thumb_quality < 5)
+				runtime_vars.thumb_quality = 5;
+			if (runtime_vars.thumb_quality > 30)
+				runtime_vars.thumb_quality = 30;
+		break;
+		case ENABLE_THUMB_FILMSTRIP:
+			if( (strcmp(ary_options[i].value, "yes") == 0) || atoi(ary_options[i].value) )
+				SETFLAG(THUMB_FILMSTRIP);
+		break;
+#endif
 		default:
 			DPRINTF(E_ERROR, L_GENERAL, "Unknown option in file %s\n",
 				optionsfile);

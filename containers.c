@@ -140,9 +140,9 @@ in_magic_container(const char *id, int flags, const char **real_id)
 		len = strlen(magic_containers[i].objectid_match);
 		if (strncmp(id, magic_containers[i].objectid_match, len) == 0)
 		{
-			if (*(id+len) == '$')
+ 			if (*(id+len) == '$')
 				*real_id = id+len+1;
-			else if (*(id+len) == '\0')
+ 			else if (*(id+len) == '\0')
 				*real_id = id;
 			else
 				continue;
